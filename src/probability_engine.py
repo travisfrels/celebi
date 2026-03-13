@@ -69,6 +69,21 @@ def calculate_probabilities(
     }
 
 
+def cumulative_from_exact(exact: dict[int, float]) -> dict[int, float]:
+    """Derive cumulative probabilities from exact probabilities.
+
+    Returns a dict mapping each possible total to the probability of achieving
+    that total or higher. Keys are sorted ascending. The lowest key always
+    maps to 1.0.
+    """
+    cumulative: dict[int, float] = {}
+    running_sum = 0.0
+    for total in sorted(exact.keys(), reverse=True):
+        running_sum += exact[total]
+        cumulative[total] = running_sum
+    return dict(sorted(cumulative.items()))
+
+
 def calculate_cumulative_probabilities(
     pool_size: int,
     pick_count: int,
@@ -82,9 +97,4 @@ def calculate_cumulative_probabilities(
     maps to 1.0.
     """
     exact = calculate_probabilities(pool_size, pick_count, selection, modifier)
-    cumulative: dict[int, float] = {}
-    running_sum = 0.0
-    for total in sorted(exact.keys(), reverse=True):
-        running_sum += exact[total]
-        cumulative[total] = running_sum
-    return dict(sorted(cumulative.items()))
+    return cumulative_from_exact(exact)
