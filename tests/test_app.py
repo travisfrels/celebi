@@ -2,7 +2,11 @@ import tkinter as tk
 import unittest
 
 from src.app import CelebiApp
-from src.probability_engine import SelectionStrategy, calculate_cumulative_probabilities
+from src.probability_engine import (
+    SelectionStrategy,
+    calculate_cumulative_probabilities,
+    calculate_probabilities,
+)
 
 
 class TestAppBase(unittest.TestCase):
@@ -19,13 +23,13 @@ class TestAppBase(unittest.TestCase):
         rows = []
         for item_id in self.app.results_tree.get_children():
             values = self.app.results_tree.item(item_id, "values")
-            rows.append((int(values[0]), values[1]))
+            rows.append((int(values[0]), values[1], values[2]))
         return rows
 
 
 class TestWidgetCreation(TestAppBase):
     def test_window_title(self):
-        self.assertEqual(self.root.title(), "Celebi \u2014 Trench Crusade Dice Roller")
+        self.assertEqual(self.root.title(), "Celebi — Trench Crusade Dice Roller")
 
     def test_pool_size_spinbox_exists(self):
         self.assertIsNotNone(self.app.pool_size_spinbox)
@@ -46,7 +50,7 @@ class TestWidgetCreation(TestAppBase):
 
     def test_treeview_columns(self):
         columns = self.app.results_tree["columns"]
-        self.assertEqual(columns, ("total", "cumulative_pct"))
+        self.assertEqual(columns, ("total", "exact_pct", "cumulative_pct"))
 
 
 class TestDefaultState(TestAppBase):
@@ -67,14 +71,17 @@ class TestDefaultState(TestAppBase):
         self.assertGreater(len(rows), 0)
 
     def test_default_results_match_engine(self):
-        expected = calculate_cumulative_probabilities(
+        expected_exact = calculate_probabilities(
+            2, 2, SelectionStrategy.TOP, 0
+        )
+        expected_cumulative = calculate_cumulative_probabilities(
             2, 2, SelectionStrategy.TOP, 0
         )
         rows = self._get_table_data()
-        self.assertEqual(len(rows), len(expected))
-        for total, pct_str in rows:
-            expected_pct = f"{expected[total] * 100:.1f}%"
-            self.assertEqual(pct_str, expected_pct)
+        self.assertEqual(len(rows), len(expected_exact))
+        for total, exact_str, cumulative_str in rows:
+            self.assertEqual(exact_str, f"{expected_exact[total] * 100:.1f}%")
+            self.assertEqual(cumulative_str, f"{expected_cumulative[total] * 100:.1f}%")
 
 
 class TestInputChanges(TestAppBase):
@@ -92,14 +99,17 @@ class TestInputChanges(TestAppBase):
         self.root.update()
         self.app._selection_var.set("bottom")
         self.root.update()
-        expected = calculate_cumulative_probabilities(
+        expected_exact = calculate_probabilities(
+            3, 2, SelectionStrategy.BOTTOM, 0
+        )
+        expected_cumulative = calculate_cumulative_probabilities(
             3, 2, SelectionStrategy.BOTTOM, 0
         )
         rows = self._get_table_data()
-        self.assertEqual(len(rows), len(expected))
-        for total, pct_str in rows:
-            expected_pct = f"{expected[total] * 100:.1f}%"
-            self.assertEqual(pct_str, expected_pct)
+        self.assertEqual(len(rows), len(expected_exact))
+        for total, exact_str, cumulative_str in rows:
+            self.assertEqual(exact_str, f"{expected_exact[total] * 100:.1f}%")
+            self.assertEqual(cumulative_str, f"{expected_cumulative[total] * 100:.1f}%")
 
     def test_pick_count_change_updates_results(self):
         self.app._pool_size_var.set("4")
@@ -115,14 +125,17 @@ class TestInputChanges(TestAppBase):
     def test_modifier_change_updates_results(self):
         self.app._modifier_var.set("3")
         self.root.update()
-        expected = calculate_cumulative_probabilities(
+        expected_exact = calculate_probabilities(
+            2, 2, SelectionStrategy.TOP, 3
+        )
+        expected_cumulative = calculate_cumulative_probabilities(
             2, 2, SelectionStrategy.TOP, 3
         )
         rows = self._get_table_data()
-        self.assertEqual(len(rows), len(expected))
-        for total, pct_str in rows:
-            expected_pct = f"{expected[total] * 100:.1f}%"
-            self.assertEqual(pct_str, expected_pct)
+        self.assertEqual(len(rows), len(expected_exact))
+        for total, exact_str, cumulative_str in rows:
+            self.assertEqual(exact_str, f"{expected_exact[total] * 100:.1f}%")
+            self.assertEqual(cumulative_str, f"{expected_cumulative[total] * 100:.1f}%")
 
 
 class TestE2E(TestAppBase):
@@ -136,18 +149,25 @@ class TestE2E(TestAppBase):
         self.app._modifier_var.set("1")
         self.root.update()
 
-        expected = calculate_cumulative_probabilities(
+        expected_exact = calculate_probabilities(
+            4, 2, SelectionStrategy.TOP, 1
+        )
+        expected_cumulative = calculate_cumulative_probabilities(
             4, 2, SelectionStrategy.TOP, 1
         )
         rows = self._get_table_data()
 
-        self.assertEqual(len(rows), len(expected))
-        for total, pct_str in rows:
-            expected_pct = f"{expected[total] * 100:.1f}%"
+        self.assertEqual(len(rows), len(expected_exact))
+        for total, exact_str, cumulative_str in rows:
             self.assertEqual(
-                pct_str,
-                expected_pct,
-                f"Mismatch at total {total}: got {pct_str}, expected {expected_pct}",
+                exact_str,
+                f"{expected_exact[total] * 100:.1f}%",
+                f"Exact mismatch at total {total}",
+            )
+            self.assertEqual(
+                cumulative_str,
+                f"{expected_cumulative[total] * 100:.1f}%",
+                f"Cumulative mismatch at total {total}",
             )
 
 

@@ -1,7 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
 
-from src.probability_engine import SelectionStrategy, calculate_cumulative_probabilities
+from src.probability_engine import (
+    SelectionStrategy,
+    calculate_cumulative_probabilities,
+    calculate_probabilities,
+)
 
 
 class CelebiApp:
@@ -96,18 +100,22 @@ class CelebiApp:
 
     def _build_results_panel(self):
         results_frame = ttk.LabelFrame(
-            self.root, text="Cumulative Probabilities", padding=10
+            self.root, text="Probabilities", padding=10
         )
         results_frame.grid(row=0, column=1, sticky="nsew", padx=(5, 10), pady=10)
         results_frame.columnconfigure(0, weight=1)
         results_frame.rowconfigure(0, weight=1)
 
         self.results_tree = ttk.Treeview(
-            results_frame, columns=("total", "cumulative_pct"), show="headings"
+            results_frame,
+            columns=("total", "exact_pct", "cumulative_pct"),
+            show="headings",
         )
         self.results_tree.heading("total", text="Total")
+        self.results_tree.heading("exact_pct", text="Exact %")
         self.results_tree.heading("cumulative_pct", text="Cumulative %")
         self.results_tree.column("total", width=80, anchor="center")
+        self.results_tree.column("exact_pct", width=100, anchor="center")
         self.results_tree.column("cumulative_pct", width=120, anchor="center")
         self.results_tree.grid(row=0, column=0, sticky="nsew")
 
@@ -157,15 +165,24 @@ class CelebiApp:
         selection = SelectionStrategy(self._selection_var.get())
 
         try:
+            exact = calculate_probabilities(
+                pool_size, pick_count, selection, modifier
+            )
             cumulative = calculate_cumulative_probabilities(
                 pool_size, pick_count, selection, modifier
             )
         except ValueError:
             return
 
-        for total, prob in cumulative.items():
+        for total in sorted(exact.keys()):
             self.results_tree.insert(
-                "", "end", values=(total, f"{prob * 100:.1f}%")
+                "",
+                "end",
+                values=(
+                    total,
+                    f"{exact[total] * 100:.1f}%",
+                    f"{cumulative[total] * 100:.1f}%",
+                ),
             )
 
     def run(self):
