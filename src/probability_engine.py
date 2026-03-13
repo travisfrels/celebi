@@ -11,6 +11,8 @@ class SelectionStrategy(Enum):
 def _validate_inputs(pool_size: int, pick_count: int) -> None:
     if pool_size < 1:
         raise ValueError(f"pool_size must be at least 1, got {pool_size}")
+    if pool_size > 6:
+        raise ValueError(f"pool_size must be at most 6, got {pool_size}")
     if pick_count not in (1, 2, 3):
         raise ValueError(f"pick_count must be 1, 2, or 3, got {pick_count}")
     if pick_count > pool_size:

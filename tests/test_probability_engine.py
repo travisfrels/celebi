@@ -16,6 +16,10 @@ class TestValidation(unittest.TestCase):
         with self.assertRaises(ValueError):
             calculate_probabilities(-1, 2, SelectionStrategy.TOP)
 
+    def test_pool_size_too_large(self):
+        with self.assertRaises(ValueError):
+            calculate_probabilities(7, 2, SelectionStrategy.TOP)
+
     def test_pick_count_invalid(self):
         with self.assertRaises(ValueError):
             calculate_probabilities(4, 4, SelectionStrategy.TOP)
