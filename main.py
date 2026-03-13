@@ -1,11 +1,9 @@
-import tkinter as tk
+from src.app import CelebiApp
 
 
 def main():
-    root = tk.Tk()
-    root.title("Celebi \u2014 Trench Crusade Dice Roller")
-    root.geometry("600x400")
-    root.mainloop()
+    app = CelebiApp()
+    app.run()
 
 
 if __name__ == "__main__":
