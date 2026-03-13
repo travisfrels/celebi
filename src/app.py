@@ -3,8 +3,8 @@ from tkinter import ttk
 
 from src.probability_engine import (
     SelectionStrategy,
-    calculate_cumulative_probabilities,
     calculate_probabilities,
+    cumulative_from_exact,
 )
 
 
@@ -168,9 +168,7 @@ class CelebiApp:
             exact = calculate_probabilities(
                 pool_size, pick_count, selection, modifier
             )
-            cumulative = calculate_cumulative_probabilities(
-                pool_size, pick_count, selection, modifier
-            )
+            cumulative = cumulative_from_exact(exact)
         except ValueError:
             return
 
