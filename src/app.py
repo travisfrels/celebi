@@ -21,6 +21,7 @@ class CelebiApp:
 
         self._build_ui()
         self._bind_variables()
+        self._update_pick_count_constraint()
         self._update_results()
 
     def _build_ui(self):
@@ -126,7 +127,21 @@ class CelebiApp:
             var.trace_add("write", self._on_input_change)
 
     def _on_input_change(self, *_args):
+        self._update_pick_count_constraint()
         self._update_results()
+
+    def _update_pick_count_constraint(self):
+        try:
+            pool_size = int(self._pool_size_var.get())
+        except (ValueError, tk.TclError):
+            return
+
+        if pool_size < 3:
+            if self._pick_count_var.get() == "3":
+                self._pick_count_var.set("2")
+            self.pick3_radio.state(["disabled"])
+        else:
+            self.pick3_radio.state(["!disabled"])
 
     def _update_results(self):
         for item in self.results_tree.get_children():

@@ -175,6 +175,34 @@ class TestEdgeCases(TestAppBase):
         rows = self._get_table_data()
         self.assertEqual(len(rows), 0)
 
+    def test_pick_count_constrained_when_pool_too_small(self):
+        self.app._pool_size_var.set("2")
+        self.root.update()
+        self.app._pick_count_var.set("3")
+        self.root.update()
+        self.assertEqual(self.app._pick_count_var.get(), "2")
+        rows = self._get_table_data()
+        self.assertGreater(len(rows), 0)
+
+    def test_pick3_disabled_when_pool_size_2(self):
+        self.app._pool_size_var.set("2")
+        self.root.update()
+        self.assertIn("disabled", self.app.pick3_radio.state())
+
+    def test_pick3_enabled_when_pool_size_3(self):
+        self.app._pool_size_var.set("3")
+        self.root.update()
+        self.assertNotIn("disabled", self.app.pick3_radio.state())
+
+    def test_pick_count_resets_to_2_when_pool_shrinks(self):
+        self.app._pool_size_var.set("4")
+        self.root.update()
+        self.app._pick_count_var.set("3")
+        self.root.update()
+        self.app._pool_size_var.set("2")
+        self.root.update()
+        self.assertEqual(self.app._pick_count_var.get(), "2")
+
 
 if __name__ == "__main__":
     unittest.main()
