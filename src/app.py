@@ -15,7 +15,7 @@ class CelebiApp:
         else:
             self.root = root
 
-        self.root.title("Celebi \u2014 Trench Crusade Dice Roller")
+        self.root.title("Celebi \u2014 Trench Crusade Dice Probability Calculator")
         self.root.geometry("600x400")
 
         self._pool_size_var = tk.StringVar(value="2")
