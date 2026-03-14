@@ -29,7 +29,7 @@ class TestAppBase(unittest.TestCase):
 
 class TestWidgetCreation(TestAppBase):
     def test_window_title(self):
-        self.assertEqual(self.root.title(), "Celebi — Trench Crusade Dice Roller")
+        self.assertEqual(self.root.title(), "Celebi — Trench Crusade Dice Probability Calculator")
 
     def test_pool_size_spinbox_exists(self):
         self.assertIsNotNone(self.app.pool_size_spinbox)
