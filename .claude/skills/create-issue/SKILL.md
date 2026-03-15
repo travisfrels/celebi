@@ -11,7 +11,7 @@ Create a GitHub Issue, using the GitHub (`gh`) CLI, about $ARGUMENTS
    - If you were called from the `create-project` skill, then use that project.
    - If you were called directly, then there is no milestone.
 2. **Draft the issue** following the `## Issue Structure` and `## Style` guidelines below.
-   a. **Validate acceptance criteria against ADRs**: Read the ADR index at `docs/adrs/CLAUDE.md` and identify any ADRs whose scope and topic are relevant to the issue's domain. For each relevant ADR with a status of "Accepted", read the ADR and verify that no acceptance criterion contradicts its decision or consequences. Revise any contradicting criteria to align with the ADR, noting the ADR reference in the criterion.
+   a. **Validate acceptance criteria against ADRs**: Read the ADR index at `adrs/CLAUDE.md` and identify any ADRs whose scope and topic are relevant to the issue's domain. For each relevant ADR with a status of "Accepted", read the ADR and verify that no acceptance criterion contradicts its decision or consequences. Revise any contradicting criteria to align with the ADR, noting the ADR reference in the criterion.
 3. **Create the issue**: `gh issue create --title "{title}" --body "{body}"` — include `--milestone "{title}"` if a milestone was selected in step 1.
 
 ## Issue Structure:
