@@ -1,4 +1,6 @@
+import itertools
 import unittest
+from collections import Counter
 
 from src.probability_engine import (
     SelectionStrategy,
@@ -18,11 +20,11 @@ class TestValidation(unittest.TestCase):
 
     def test_pool_size_too_large(self):
         with self.assertRaises(ValueError):
-            calculate_probabilities(7, 2, SelectionStrategy.TOP)
+            calculate_probabilities(13, 2, SelectionStrategy.TOP)
 
     def test_pick_count_invalid(self):
         with self.assertRaises(ValueError):
-            calculate_probabilities(4, 4, SelectionStrategy.TOP)
+            calculate_probabilities(4, 5, SelectionStrategy.TOP)
 
     def test_pick_count_zero(self):
         with self.assertRaises(ValueError):
@@ -68,8 +70,8 @@ class TestExactProbabilities(unittest.TestCase):
 
 class TestProbabilitySumToOne(unittest.TestCase):
     def test_all_valid_combinations(self):
-        for pool_size in range(1, 7):
-            for pick_count in (1, 2, 3):
+        for pool_size in range(1, 13):
+            for pick_count in range(1, 5):
                 if pick_count > pool_size:
                     continue
                 for selection in SelectionStrategy:
@@ -163,6 +165,62 @@ class TestEdgeCases(unittest.TestCase):
         top = calculate_probabilities(1, 1, SelectionStrategy.TOP)
         bottom = calculate_probabilities(1, 1, SelectionStrategy.BOTTOM)
         self.assertEqual(top, bottom)
+
+
+class TestLargePoolSizes(unittest.TestCase):
+    def test_pool_size_12_pick_4_top_returns_results(self):
+        probs = calculate_probabilities(12, 4, SelectionStrategy.TOP)
+        self.assertAlmostEqual(sum(probs.values()), 1.0)
+        self.assertTrue(all(v >= 0 for v in probs.values()))
+
+    def test_pool_size_12_pick_4_bottom_returns_results(self):
+        probs = calculate_probabilities(12, 4, SelectionStrategy.BOTTOM)
+        self.assertAlmostEqual(sum(probs.values()), 1.0)
+
+    def test_pool_size_8_pick_3_top(self):
+        probs = calculate_probabilities(8, 3, SelectionStrategy.TOP)
+        self.assertAlmostEqual(sum(probs.values()), 1.0)
+        self.assertEqual(min(probs.keys()), 3)
+        self.assertEqual(max(probs.keys()), 18)
+
+    def test_pick_count_4_valid(self):
+        probs = calculate_probabilities(4, 4, SelectionStrategy.TOP)
+        self.assertAlmostEqual(sum(probs.values()), 1.0)
+        self.assertEqual(min(probs.keys()), 4)
+        self.assertEqual(max(probs.keys()), 24)
+
+
+class TestCrossValidation(unittest.TestCase):
+    """Verify multiset results match brute-force for pool_size <= 6."""
+
+    def _brute_force_probabilities(self, pool_size, pick_count, selection):
+        totals: Counter[int] = Counter()
+        for outcome in itertools.product(range(1, 7), repeat=pool_size):
+            sorted_outcome = sorted(outcome)
+            if selection == SelectionStrategy.TOP:
+                selected = sorted_outcome[-pick_count:]
+            else:
+                selected = sorted_outcome[:pick_count]
+            totals[sum(selected)] += 1
+        total_outcomes = 6**pool_size
+        return {k: v / total_outcomes for k, v in sorted(totals.items())}
+
+    def test_cross_validate_all_small_pools(self):
+        for pool_size in range(1, 7):
+            for pick_count in range(1, min(pool_size, 4) + 1):
+                for selection in SelectionStrategy:
+                    with self.subTest(
+                        pool=pool_size, pick=pick_count, sel=selection
+                    ):
+                        engine = calculate_probabilities(
+                            pool_size, pick_count, selection
+                        )
+                        brute = self._brute_force_probabilities(
+                            pool_size, pick_count, selection
+                        )
+                        self.assertEqual(engine.keys(), brute.keys())
+                        for k in engine:
+                            self.assertAlmostEqual(engine[k], brute[k])
 
 
 if __name__ == "__main__":
