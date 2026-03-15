@@ -18,17 +18,18 @@ src/
 tests/
   test_app.py            # UI tests (requires Tk)
   test_probability_engine.py  # Engine unit tests
-projects/                # Project definitions and milestone tracking
-adrs/                    # Architecture Decision Records
-  CLAUDE.md              # ADR index and conventions
+docs/
+  projects/              # Project definitions and milestone tracking
+  adrs/                  # Architecture Decision Records
+    CLAUDE.md            # ADR index and conventions
 main.py                  # Entry point
 ```
 
 ## Documentation
 
-- `projects/` — Project definitions. Check here for scope, status, and exit criteria before starting work.
-- `adrs/` — Architecture Decision Records. Check `adrs/CLAUDE.md` for the index. Consult before making design choices that may already be settled.
-- `projects/TEMPLATE.md` — Template for new project definitions.
+- `docs/projects/` — Project definitions. Check here for scope, status, and exit criteria before starting work.
+- `docs/adrs/` — Architecture Decision Records. Check `docs/adrs/CLAUDE.md` for the index. Consult before making design choices that may already be settled.
+- `docs/projects/TEMPLATE.md` — Template for new project definitions.
 
 ## Skills
 
@@ -55,5 +56,5 @@ Custom skills are defined in `.claude/skills/`. Each skill has a `SKILL.md` with
 - **Testing**: Use `unittest`. Tests live in `tests/`. Run with `pytest`.
 - **Git workflow**: Branch per issue (`issue-{number}-{description}`). PRs reference issues.
 - **Commits**: Concise message, reference issue number, include `Co-Authored-By` when AI-assisted.
-- **Project tracking**: GitHub Milestones group issues per project. Project docs in `projects/`.
-- **ADRs**: Follow template in `adrs/CLAUDE.md`. Filename format: `ADR-{SCOPE}-{TOPIC}-{DATE}.md`.
+- **Project tracking**: GitHub Milestones group issues per project. Project docs in `docs/projects/`.
+- **ADRs**: Follow template in `docs/adrs/CLAUDE.md`. Filename format: `ADR-{SCOPE}-{TOPIC}-{DATE}.md`.

@@ -5,7 +5,7 @@ description: Plan a project by investigating the problem space, drafting project
 
 Plan a project around $ARGUMENTS
 
-1. Run the full E2E test suite to establish a clean baseline: `bash scripts/run-e2e.sh --development`. All tests must pass before proceeding. If any tests fail, report the failures to the user and stop — do not continue with project planning until the baseline is clean.
+1. Run the test suite to establish a clean baseline: `python -m pytest tests/ -v`. All tests must pass before proceeding. If any tests fail, report the failures to the user and stop — do not continue with project planning until the baseline is clean.
 2. Read `docs/ENG-DESIGN.md`, `docs/projects/CLAUDE.md`, and `docs/projects/TEMPLATE.md`.
 3. Read project documents in `docs/projects/` noting the status of the project to identify lessons learned and in-flight work.
 4. Examine the codebase for relevant files and documentation noting the behavior and constraints that each file imposes on the solution.
