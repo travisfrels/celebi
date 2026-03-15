@@ -4,7 +4,7 @@ Application source code.
 
 ## Modules
 
-- `app.py` — Tkinter GUI. `CelebiApp` class owns all widgets and wires input variables to `_update_results`.
+- `app.py` — Tkinter GUI. `ScenarioFrame(ttk.Frame)` owns per-scenario state and widgets. `CelebiApp` orchestrates 1–4 `ScenarioFrame` instances with add/remove management.
 - `probability_engine.py` — Pure computation. No UI or I/O dependencies. Stdlib only (`itertools`, `math`, `collections`).
 
 ## Conventions

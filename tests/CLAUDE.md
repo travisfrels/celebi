@@ -12,5 +12,5 @@ Unit and integration tests. Run with `python -m pytest tests/ -v`.
 - Framework: `unittest.TestCase`. Runner: `pytest`.
 - One test class per concern (e.g., `TestValidation`, `TestExactProbabilities`, `TestModifiers`).
 - Use `self.subTest()` for parametrized coverage over input combinations.
-- UI tests inherit from `TestAppBase`, which handles `setUp`/`tearDown` for the Tk root and app instance.
+- UI tests share a single module-level `tk.Tk()` root (`setUpModule`/`tearDownModule`). `TestAppBase` creates a fresh `CelebiApp` per test and destroys child widgets in `tearDown`.
 - Cross-validation tests compare the engine against an independent brute-force implementation to verify algorithmic correctness.
