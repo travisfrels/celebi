@@ -53,6 +53,11 @@ Custom skills are defined in `.claude/skills/`. Each skill has a `SKILL.md` with
 
 ## Conventions
 
+- **TDD**: Write tests first, then implement to make them pass. Tests define the expected behavior before production code exists.
+- **Clean code**: Meaningful names, small focused functions, no dead code, no commented-out code. Code should read like prose.
+- **SOLID**: Single responsibility per module and class. Depend on abstractions, not concretions. Keep interfaces small and focused.
+- **DRY**: Extract shared logic rather than duplicating it. One source of truth for each piece of knowledge.
+- **YAGNI**: Only build what is needed now. No speculative features, abstractions, or configurability for hypothetical future use.
 - **Testing**: Use `unittest`. Tests live in `tests/`. Run with `pytest`.
 - **Git workflow**: Branch per issue (`issue-{number}-{description}`). PRs reference issues.
 - **Commits**: Concise message, reference issue number, include `Co-Authored-By` when AI-assisted.
