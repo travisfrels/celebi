@@ -6,6 +6,7 @@ from src.probability_engine import (
     SelectionStrategy,
     calculate_cumulative_probabilities,
     calculate_probabilities,
+    success_failure,
 )
 
 
@@ -221,6 +222,49 @@ class TestCrossValidation(unittest.TestCase):
                         self.assertEqual(engine.keys(), brute.keys())
                         for k in engine:
                             self.assertAlmostEqual(engine[k], brute[k])
+
+
+class TestSuccessFailure(unittest.TestCase):
+    def test_default_threshold_2d6(self):
+        exact = calculate_probabilities(2, 2, SelectionStrategy.TOP)
+        failure, success = success_failure(exact)
+        self.assertAlmostEqual(success, 21 / 36)
+        self.assertAlmostEqual(failure, 15 / 36)
+
+    def test_custom_threshold_10(self):
+        exact = calculate_probabilities(2, 2, SelectionStrategy.TOP)
+        failure, success = success_failure(exact, threshold=10)
+        self.assertAlmostEqual(success, 6 / 36)
+        self.assertAlmostEqual(failure, 30 / 36)
+
+    def test_threshold_below_min_total(self):
+        exact = calculate_probabilities(1, 1, SelectionStrategy.TOP)
+        failure, success = success_failure(exact, threshold=0)
+        self.assertAlmostEqual(success, 1.0)
+        self.assertAlmostEqual(failure, 0.0)
+
+    def test_threshold_above_max_total(self):
+        exact = calculate_probabilities(1, 1, SelectionStrategy.TOP)
+        failure, success = success_failure(exact, threshold=20)
+        self.assertAlmostEqual(success, 0.0)
+        self.assertAlmostEqual(failure, 1.0)
+
+    def test_sum_to_one(self):
+        for pool_size in range(1, 7):
+            for pick_count in range(1, min(pool_size, 4) + 1):
+                for selection in SelectionStrategy:
+                    for threshold in (1, 7, 12):
+                        with self.subTest(
+                            pool=pool_size,
+                            pick=pick_count,
+                            sel=selection,
+                            threshold=threshold,
+                        ):
+                            exact = calculate_probabilities(
+                                pool_size, pick_count, selection
+                            )
+                            failure, success = success_failure(exact, threshold)
+                            self.assertAlmostEqual(failure + success, 1.0)
 
 
 if __name__ == "__main__":

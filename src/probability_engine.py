@@ -91,6 +91,19 @@ def cumulative_from_exact(exact: dict[int, float]) -> dict[int, float]:
     return dict(sorted(cumulative.items()))
 
 
+def success_failure(
+    exact: dict[int, float], threshold: int = 7
+) -> tuple[float, float]:
+    """Return (failure_probability, success_probability) for the given threshold.
+
+    Failure = sum of probabilities for totals < threshold.
+    Success = sum of probabilities for totals >= threshold.
+    """
+    failure = sum(prob for total, prob in exact.items() if total < threshold)
+    success = sum(prob for total, prob in exact.items() if total >= threshold)
+    return (failure, success)
+
+
 def calculate_cumulative_probabilities(
     pool_size: int,
     pick_count: int,
