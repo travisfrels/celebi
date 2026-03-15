@@ -26,7 +26,7 @@ Finish GitHub issue $ARGUMENTS
        ```bash
        gh pr create --title "{Title}" --body "{Body}"
        ```
-6. Update the project doc in `projects/`:
+6. Update the project doc in `docs/projects/`:
     - Add the PR URL returned by step 5 to the `### Pull Requests` section.
     - If this issue is a follow-up (not in the project's original scope), add the issue URL to the `### Follow-Up Issues` section.
     - Commit and push the project doc update.

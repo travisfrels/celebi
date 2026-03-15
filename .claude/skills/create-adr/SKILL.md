@@ -3,7 +3,7 @@ name: create-adr
 description: Create a local Architecture Decision Records (ADR) file. Use when the asked to create an ADR.
 ---
 
-Create an ADR within a local ADR file (adrs) around $ARGUMENTS.
+Create an ADR within a local ADR file (docs/adrs) around $ARGUMENTS.
 
 ## ADR Template
 
@@ -64,4 +64,4 @@ ADRs that include subsystem design decisions should add a **Design** section bet
 
 ## After Creating the ADR
 
-Add a row to the `## Index` table in `adrs/CLAUDE.md` with the new ADR's filename (as a relative link), title, scope, and status.
+Add a row to the `## Index` table in `docs/adrs/CLAUDE.md` with the new ADR's filename (as a relative link), title, scope, and status.

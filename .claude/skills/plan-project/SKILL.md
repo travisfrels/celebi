@@ -5,9 +5,9 @@ description: Plan a project by investigating the problem space, drafting project
 
 Plan a project around $ARGUMENTS
 
-1. Run the test suite to establish a clean baseline: `python -m pytest tests/ -v`. All tests must pass before proceeding. If any tests fail, report the failures to the user and stop — do not continue with project planning until the baseline is clean.
-2. Read `projects/CLAUDE.md` and `projects/TEMPLATE.md`.
-3. Read project documents in `projects/` noting the status of the project to identify lessons learned and in-flight work.
+1. Run the full E2E test suite to establish a clean baseline: `bash scripts/run-e2e.sh --development`. All tests must pass before proceeding. If any tests fail, report the failures to the user and stop — do not continue with project planning until the baseline is clean.
+2. Read `docs/ENG-DESIGN.md`, `docs/projects/CLAUDE.md`, and `docs/projects/TEMPLATE.md`.
+3. Read project documents in `docs/projects/` noting the status of the project to identify lessons learned and in-flight work.
 4. Examine the codebase for relevant files and documentation noting the behavior and constraints that each file imposes on the solution.
   - Stop when you can describe the current state in the Situation section without gaps.
 5. Where the implementation space is non-obvious, consult official documentation and collect design reference URLs.
@@ -28,10 +28,10 @@ Plan a project around $ARGUMENTS
    * **Issue Decomposition**: Break exit criteria into discrete, implementable issues. Each issue should have a title and a brief description of its scope. For features that affect user-facing behavior, include E2E test criteria in the feature issue's acceptance criteria rather than deferring E2E coverage to a separate terminal issue.
    * **Design References**: External documentation URLs consulted during research.
 8. Iterate on user feedback until the research brief is confirmed.
-9. Evaluate each decision in the Approach section against the ADR eligibility criteria in `adrs/CLAUDE.md`. For decisions that meet the criteria, create the ADR in `adrs/` following the ADR template and conventions in `adrs/CLAUDE.md`. Link the ADR in the research brief's Design References.
+9. Evaluate each decision in the Approach section against the ADR eligibility criteria in `docs/adrs/CLAUDE.md`. For decisions that meet the criteria, create the ADR in `docs/adrs/` following the ADR template and conventions in `docs/adrs/CLAUDE.md`. Link the ADR in the research brief's Design References.
 10. Create the project definition file and GitHub Milestone from the confirmed research brief:
     1. Create a GitHub issue to represent project creation.
     2. Create a working branch to use with the project creation GitHub issue.
     3. Create a GitHub Milestone matching the project title using `gh api repos/{owner}/{repo}/milestones -f title="V{VERSION} {Initiative Name}"`. The milestone title must match the project title exactly.
-    4. Create the project file at `projects/V{VERSION}-{INITIATIVE}.md` using the template in `projects/TEMPLATE.md`. Populate template sections from the confirmed research brief. Populate the `### Design References` section from the collected design references. Include the milestone URL in the `## References` section.
+    4. Create the project file at `docs/projects/V{VERSION}-{INITIATIVE}.md` using the template in `docs/projects/TEMPLATE.md`. Populate template sections from the confirmed research brief. Populate the `### Design References` section from the collected design references. Include the milestone URL in the `## References` section.
     5. Create the GitHub issues for the project, each with `--milestone "{milestone title}"`. Follow the issue structure and style conventions in the `create-issue` skill definition.

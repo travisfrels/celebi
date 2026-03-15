@@ -41,7 +41,8 @@ Review GitHub pull request $ARGUMENTS
    * Does the documentation effectively communicate the purpose, intention, and usage of the code?
    * Are there stale README.md, CLAUDE.md, or RUNBOOK.md files?
    * If the change introduces or modifies an operational capability, does the runbook cover it?
-6. Determine if this body of work stays true to the intent of the issue and associated project document (projects/).
+   * If the change modifies environment-specific configuration or documentation, search `docs/ENG-DESIGN.md` for all references to the affected environment to ensure consistency across sections.
+6. Determine if this body of work stays true to the intent of the issue, associated project document (docs/projects), and eng-design (docs/ENG-DESIGN.md).
    * If yes, then use a comment to clearly state that the pull request is acceptable and explain why.
    * If no, then use a comment explain the specific deficiencies, calling out anti-patterns by name if applicable. For each deficiency, propose a concrete alternative.
 
