@@ -19,6 +19,7 @@ tests/
   test_app.py            # UI tests (requires Tk)
   test_probability_engine.py  # Engine unit tests
 docs/
+  ENG-DESIGN.md          # Engineering design document
   projects/              # Project definitions and milestone tracking
   adrs/                  # Architecture Decision Records
     CLAUDE.md            # ADR index and conventions
@@ -27,6 +28,7 @@ main.py                  # Entry point
 
 ## Documentation
 
+- `docs/ENG-DESIGN.md` — Engineering design document. System architecture, key components, and their interactions.
 - `docs/projects/` — Project definitions. Check here for scope, status, and exit criteria before starting work.
 - `docs/adrs/` — Architecture Decision Records. Check `docs/adrs/CLAUDE.md` for the index. Consult before making design choices that may already be settled.
 - `docs/projects/TEMPLATE.md` — Template for new project definitions.
