@@ -5,6 +5,7 @@ Application source code.
 ## Modules
 
 - `app.py` — Tkinter GUI. `ScenarioFrame(ttk.Frame)` owns per-scenario state and widgets. `CelebiApp` orchestrates 1–4 `ScenarioFrame` instances with add/remove management.
+- `dice_roller.py` — Dice rolling logic. `roll_pool()`, `select_dice()`, `calculate_sum()`, `DiceRollResult` dataclass. Uses `random` (stdlib).
 - `probability_engine.py` — Pure computation. No UI or I/O dependencies. Stdlib only (`itertools`, `math`, `collections`).
 - `theme.py` — OS-aware light/dark theming. Detects Windows system theme via `winreg`, applies palettes via `ttk.Style`. Stdlib only.
 

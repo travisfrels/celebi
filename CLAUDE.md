@@ -14,10 +14,14 @@ Trench Crusade dice probability calculator. Desktop app built with Python + Tkin
 ```
 src/
   app.py                 # Tkinter GUI (CelebiApp class)
+  dice_roller.py         # Dice rolling logic (roll, select, sum)
   probability_engine.py  # Exact combinatorial probability calculations
+  theme.py               # OS-aware light/dark theming
 tests/
   test_app.py            # UI tests (requires Tk)
+  test_dice_roller.py    # Dice roller unit tests
   test_probability_engine.py  # Engine unit tests
+  test_theme.py          # Theme detection and application tests
 docs/
   ENG-DESIGN.md          # Engineering design document
   projects/              # Project definitions and milestone tracking

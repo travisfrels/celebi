@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 
-from src.theme import apply_theme, detect_system_theme
+from src.dice_roller import DiceRollResult, calculate_sum, roll_pool, select_dice
+from src.theme import apply_theme, detect_system_theme, get_palette
 from src.probability_engine import (
     SelectionStrategy,
     calculate_probabilities,
@@ -10,10 +11,46 @@ from src.probability_engine import (
 )
 
 
+_DIE_SIZE = 36
+_DOT_RADIUS = 3
+
+_DOT_POSITIONS = {
+    1: [(0.5, 0.5)],
+    2: [(0.25, 0.25), (0.75, 0.75)],
+    3: [(0.25, 0.25), (0.5, 0.5), (0.75, 0.75)],
+    4: [(0.25, 0.25), (0.75, 0.25), (0.25, 0.75), (0.75, 0.75)],
+    5: [(0.25, 0.25), (0.75, 0.25), (0.5, 0.5), (0.25, 0.75), (0.75, 0.75)],
+    6: [
+        (0.25, 0.25), (0.75, 0.25),
+        (0.25, 0.5), (0.75, 0.5),
+        (0.25, 0.75), (0.75, 0.75),
+    ],
+}
+
+
+def _draw_die_face(canvas, value, bg, fg):
+    """Draw a d6 face with dot pattern on the given canvas."""
+    canvas.delete("all")
+    size = _DIE_SIZE
+    canvas.configure(width=size, height=size)
+    canvas.create_rectangle(1, 1, size - 1, size - 1, fill=bg, outline=fg, width=1)
+    for px, py in _DOT_POSITIONS.get(value, []):
+        cx = px * size
+        cy = py * size
+        canvas.create_oval(
+            cx - _DOT_RADIUS, cy - _DOT_RADIUS,
+            cx + _DOT_RADIUS, cy + _DOT_RADIUS,
+            fill=fg, outline=fg,
+        )
+
+
 class ScenarioFrame(ttk.Frame):
-    def __init__(self, parent, on_remove=None, **kwargs):
+    def __init__(self, parent, on_remove=None, palette=None, **kwargs):
         super().__init__(parent, **kwargs)
         self._on_remove = on_remove
+        self._palette = palette or {}
+        self._last_roll = None
+        self._die_canvases = []
 
         self._pool_size_var = tk.StringVar(value="2")
         self._selection_var = tk.StringVar(value="top")
@@ -22,10 +59,11 @@ class ScenarioFrame(ttk.Frame):
         self._threshold_var = tk.StringVar(value="7")
 
         self.columnconfigure(0, weight=1)
-        self.rowconfigure(2, weight=1)
+        self.rowconfigure(3, weight=1)
 
         self._build_config()
         self._build_success_failure()
+        self._build_dice_roller()
         self._build_results()
         self._build_remove_button()
         self._bind_variables()
@@ -118,9 +156,91 @@ class ScenarioFrame(ttk.Frame):
         self.failure_label = ttk.Label(sf_frame, text="Failure: —")
         self.failure_label.grid(row=1, column=0, sticky="w")
 
+    def _build_dice_roller(self):
+        roller_frame = ttk.LabelFrame(self, text="Dice Roller", padding=10)
+        roller_frame.grid(row=2, column=0, sticky="nsew", padx=5, pady=(0, 5))
+        roller_frame.columnconfigure(0, weight=1)
+
+        self.roll_button = ttk.Button(
+            roller_frame, text="Roll", command=self._do_roll
+        )
+        self.roll_button.grid(row=0, column=0, sticky="w", pady=(0, 5))
+
+        self._dice_frame = ttk.Frame(roller_frame)
+        self._dice_frame.grid(row=1, column=0, sticky="w")
+
+        self.sum_label = ttk.Label(roller_frame, text="")
+        self.sum_label.grid(row=2, column=0, sticky="w", pady=(5, 0))
+
+    def _do_roll(self):
+        try:
+            pool_size = int(self._pool_size_var.get())
+            pick_count = int(self._pick_count_var.get())
+            modifier = int(self._modifier_var.get())
+        except (ValueError, tk.TclError):
+            return
+
+        selection = SelectionStrategy(self._selection_var.get())
+        pool = roll_pool(pool_size)
+        selected, unselected = select_dice(pool, pick_count, selection)
+        total = calculate_sum(selected, modifier)
+
+        self._last_roll = DiceRollResult(
+            pool=pool,
+            selected=selected,
+            unselected=unselected,
+            modifier=modifier,
+            total=total,
+        )
+        self._render_dice()
+
+    def _render_dice(self):
+        for canvas in self._die_canvases:
+            canvas.destroy()
+        self._die_canvases = []
+
+        if self._last_roll is None:
+            self.sum_label.configure(text="")
+            return
+
+        roll = self._last_roll
+        bg = self._palette.get("bg", "#f0f0f0")
+        fg = self._palette.get("fg", "#1a1a1a")
+        muted_bg = self._palette.get("trough", "#c8c8c8")
+        muted_fg = self._palette.get("border", "#a0a0a0")
+
+        remaining_selected = list(roll.selected)
+        for i, value in enumerate(roll.pool):
+            is_selected = value in remaining_selected
+            if is_selected:
+                remaining_selected.remove(value)
+                die_bg = bg
+                die_fg = fg
+            else:
+                die_bg = muted_bg
+                die_fg = muted_fg
+
+            canvas = tk.Canvas(
+                self._dice_frame,
+                width=_DIE_SIZE,
+                height=_DIE_SIZE,
+                highlightthickness=0,
+                bg=bg,
+            )
+            canvas.grid(row=0, column=i, padx=2)
+            _draw_die_face(canvas, value, die_bg, die_fg)
+            self._die_canvases.append(canvas)
+
+        modifier_str = ""
+        if roll.modifier > 0:
+            modifier_str = f" + {roll.modifier}"
+        elif roll.modifier < 0:
+            modifier_str = f" - {abs(roll.modifier)}"
+        self.sum_label.configure(text=f"Total: {roll.total}{modifier_str}")
+
     def _build_results(self):
         results_frame = ttk.LabelFrame(self, text="Probabilities", padding=10)
-        results_frame.grid(row=2, column=0, sticky="nsew", padx=5, pady=(0, 5))
+        results_frame.grid(row=3, column=0, sticky="nsew", padx=5, pady=(0, 5))
         results_frame.columnconfigure(0, weight=1)
         results_frame.rowconfigure(0, weight=1)
 
@@ -153,7 +273,7 @@ class ScenarioFrame(ttk.Frame):
             self._on_remove(self)
 
     def show_remove_button(self):
-        self.remove_button.grid(row=3, column=0, pady=(0, 5))
+        self.remove_button.grid(row=4, column=0, pady=(0, 5))
 
     def hide_remove_button(self):
         self.remove_button.grid_remove()
@@ -250,6 +370,7 @@ class CelebiApp:
 
         theme = detect_system_theme()
         apply_theme(self.root, theme)
+        self._palette = get_palette(theme)
 
         self.scenarios = []
         self._build_ui()
@@ -276,7 +397,9 @@ class CelebiApp:
             return
 
         scenario = ScenarioFrame(
-            self._scenario_container, on_remove=self._handle_remove
+            self._scenario_container,
+            on_remove=self._handle_remove,
+            palette=self._palette,
         )
         self.scenarios.append(scenario)
         self._relayout_scenarios()

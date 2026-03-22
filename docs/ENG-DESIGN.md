@@ -12,7 +12,8 @@ The application follows a two-layer architecture with strict separation between 
 main.py
   └── CelebiApp (orchestrator)
         └── ScenarioFrame (1–4 instances)
-              └── probability_engine (stateless computation)
+              ├── probability_engine (stateless computation)
+              └── dice_roller (random rolling logic)
 ```
 
 - **Presentation layer** (`src/app.py`) — Tkinter GUI. Handles user input, layout, and results display. Depends on the computation layer but contains no probability logic.
@@ -51,6 +52,20 @@ Uses multiset enumeration with multinomial weighting to compute exact probabilit
 
 Enum (`TOP`, `BOTTOM`) controlling whether the highest or lowest dice from the pool are selected for the total.
 
+### dice_roller
+
+Dice rolling module (`src/dice_roller.py`). Separate from the probability engine (random vs combinatorial). Public API:
+
+| Function | Purpose |
+|----------|---------|
+| `roll_pool` | Roll `pool_size` d6 dice, return list of individual results |
+| `select_dice` | Select dice from pool by `SelectionStrategy`, return (selected, unselected) preserving pool order |
+| `calculate_sum` | Sum selected dice plus modifier |
+
+Defines `DiceRollResult` dataclass holding pool, selected, unselected, modifier, and total. Uses only stdlib (`random`, `dataclasses`).
+
+Each `ScenarioFrame` embeds a "Dice Roller" section (between Summary and Probabilities) with a Roll button, per-die `tk.Canvas` faces showing d6 dot patterns, and a sum label. Selected dice use theme foreground colors; unselected dice use muted trough/border colors.
+
 ### theme
 
 OS-aware theming module (`src/theme.py`). Public API:
@@ -58,6 +73,7 @@ OS-aware theming module (`src/theme.py`). Public API:
 | Function | Purpose |
 |----------|---------|
 | `detect_system_theme` | Read Windows `AppsUseLightTheme` registry value via `winreg`; fall back to LIGHT |
+| `get_palette` | Return a copy of the color palette dict for a given `Theme` |
 | `apply_theme` | Configure `ttk.Style` (clam base) and root window background for a given `Theme` |
 
 Defines `Theme` enum (`LIGHT`, `DARK`) and light/dark color palettes. Called once at startup by `CelebiApp.__init__` before widget construction. Uses only stdlib (`winreg`, `tkinter.ttk`).

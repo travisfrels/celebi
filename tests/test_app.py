@@ -554,5 +554,139 @@ class TestMultiScenarioE2E(TestAppBase):
         self.assertEqual(len(rows1), len(expected1))
 
 
+class TestDiceRollerWidgets(TestAppBase):
+    def test_roll_button_exists(self):
+        self.assertIsNotNone(self._scenario().roll_button)
+        self.assertIsInstance(self._scenario().roll_button, tk.ttk.Button)
+
+    def test_sum_label_exists(self):
+        self.assertIsNotNone(self._scenario().sum_label)
+
+    def test_sum_label_empty_before_roll(self):
+        self.assertEqual(self._scenario().sum_label.cget("text"), "")
+
+    def test_no_dice_canvases_before_roll(self):
+        self.assertEqual(len(self._scenario()._die_canvases), 0)
+
+
+class TestDiceRollerBehavior(TestAppBase):
+    def test_roll_creates_dice_canvases(self):
+        s = self._scenario()
+        s._do_roll()
+        self.root.update()
+        pool_size = int(s._pool_size_var.get())
+        self.assertEqual(len(s._die_canvases), pool_size)
+
+    def test_roll_displays_sum(self):
+        s = self._scenario()
+        s._do_roll()
+        self.root.update()
+        text = s.sum_label.cget("text")
+        self.assertTrue(text.startswith("Total:"))
+
+    def test_roll_with_modifier_shows_modifier_in_sum(self):
+        s = self._scenario()
+        s._modifier_var.set("3")
+        self.root.update()
+        s._do_roll()
+        self.root.update()
+        text = s.sum_label.cget("text")
+        self.assertIn("+ 3", text)
+
+    def test_roll_with_negative_modifier_shows_modifier_in_sum(self):
+        s = self._scenario()
+        s._modifier_var.set("-2")
+        self.root.update()
+        s._do_roll()
+        self.root.update()
+        text = s.sum_label.cget("text")
+        self.assertIn("- 2", text)
+
+    def test_roll_with_zero_modifier_no_modifier_text(self):
+        s = self._scenario()
+        s._modifier_var.set("0")
+        self.root.update()
+        s._do_roll()
+        self.root.update()
+        text = s.sum_label.cget("text")
+        self.assertNotIn("+", text)
+        self.assertNotIn("-", text)
+
+    def test_roll_stores_last_roll(self):
+        from src.dice_roller import DiceRollResult
+
+        s = self._scenario()
+        s._do_roll()
+        self.root.update()
+        self.assertIsNotNone(s._last_roll)
+        self.assertIsInstance(s._last_roll, DiceRollResult)
+
+    def test_roll_result_matches_scenario_config(self):
+        s = self._scenario()
+        s._pool_size_var.set("4")
+        self.root.update()
+        s._pick_count_var.set("2")
+        self.root.update()
+        s._do_roll()
+        self.root.update()
+        self.assertEqual(len(s._last_roll.pool), 4)
+        self.assertEqual(len(s._last_roll.selected), 2)
+        self.assertEqual(len(s._last_roll.unselected), 2)
+
+    def test_reroll_replaces_previous_dice(self):
+        s = self._scenario()
+        s._do_roll()
+        self.root.update()
+        first_canvases = list(s._die_canvases)
+        s._do_roll()
+        self.root.update()
+        self.assertEqual(len(s._die_canvases), int(s._pool_size_var.get()))
+        for c in first_canvases:
+            self.assertFalse(c.winfo_exists())
+
+    def test_pool_size_change_updates_dice_count_on_reroll(self):
+        s = self._scenario()
+        s._do_roll()
+        self.root.update()
+        self.assertEqual(len(s._die_canvases), 2)
+        s._pool_size_var.set("6")
+        self.root.update()
+        s._do_roll()
+        self.root.update()
+        self.assertEqual(len(s._die_canvases), 6)
+
+
+class TestDiceRollerE2E(TestAppBase):
+    def test_roll_sum_matches_selected_plus_modifier(self):
+        s = self._scenario()
+        s._pool_size_var.set("4")
+        self.root.update()
+        s._pick_count_var.set("2")
+        self.root.update()
+        s._modifier_var.set("3")
+        self.root.update()
+        s._do_roll()
+        self.root.update()
+        expected_total = sum(s._last_roll.selected) + 3
+        self.assertEqual(s._last_roll.total, expected_total)
+
+    def test_multi_scenario_independent_rolls(self):
+        self.app.add_scenario()
+        self.root.update()
+        s0 = self._scenario(0)
+        s1 = self._scenario(1)
+        s0._pool_size_var.set("3")
+        self.root.update()
+        s1._pool_size_var.set("6")
+        self.root.update()
+        s0._do_roll()
+        s1._do_roll()
+        self.root.update()
+        self.assertEqual(len(s0._die_canvases), 3)
+        self.assertEqual(len(s1._die_canvases), 6)
+        self.assertEqual(len(s0._last_roll.pool), 3)
+        self.assertEqual(len(s1._last_roll.pool), 6)
+
+
 if __name__ == "__main__":
     unittest.main()

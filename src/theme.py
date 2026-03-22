@@ -62,6 +62,11 @@ _PALETTES = {
 }
 
 
+def get_palette(theme):
+    """Return the color palette dict for the given theme."""
+    return dict(_PALETTES[theme])
+
+
 def apply_theme(root, theme):
     """Configure ttk.Style and root window background for the given theme."""
     palette = _PALETTES[theme]
