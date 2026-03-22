@@ -36,6 +36,8 @@ Create a GitHub pull request, using the GitHub (`gh`) CLI.
 
 ## Create the Pull Request
 
+Follow the structure in [`TEMPLATE.md`](TEMPLATE.md):
+
 1. Identify the issue.
 2. Describe how the changes address the issue.
 3. Describe how correctness was verified.

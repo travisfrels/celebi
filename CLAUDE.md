@@ -48,10 +48,14 @@ Custom skills are defined in `.claude/skills/`. Each skill has a `SKILL.md` with
 | `review-pr` | Review a GitHub pull request |
 | `fetch-pr` | Fetch PR details, comments, and reviews |
 | `create-adr` | Create an Architecture Decision Record |
+| `create-eng-design` | Create or update the engineering design document |
 | `design` | Generate solution alternatives (used with assess-alternatives) |
 | `assess-alternatives` | Score and select from alternatives |
 | `critique` | Critical assessment of a statement or idea |
 | `project-post-mortem` | Post-mortem analysis after project completion |
+| `branch-hygiene` | Synchronize local main with remote, prune stale branches |
+| `merge-main` | Merge latest main into current working branch |
+| `nope` | Correct prohibited behaviors (compound commands, git -C) |
 
 ## Conventions
 
