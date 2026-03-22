@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m pytest:*)",
+      "Bash(python main.py:*)",
+      "Bash(grep:*)",
+      "Bash(git status:*)",
+      "Bash(git add:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git commit:*)",
+      "Bash(git diff:*)",
+      "Bash(git pull:*)",
+      "Bash(git fetch:*)",
+      "Bash(gh project list:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh label list:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh issue comment:*)",
+      "Bash(gh issue create:*)",
+      "Bash(gh issue view:*)",
+      "Bash(gh api:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh repo view:*)",
+      "WebFetch(domain:docs.python.org)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:tkdocs.com)",
+      "WebFetch(domain:martinfowler.com)",
+      "WebSearch"
+    ]
+  }
+}
