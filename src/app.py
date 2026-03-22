@@ -204,7 +204,6 @@ class ScenarioFrame(ttk.Frame):
             return
 
         roll = self._last_roll
-        selected_set = list(roll.selected)
         bg = self._palette.get("bg", "#f0f0f0")
         fg = self._palette.get("fg", "#1a1a1a")
         muted_bg = self._palette.get("trough", "#c8c8c8")
