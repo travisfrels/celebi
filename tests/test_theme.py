@@ -3,7 +3,7 @@ from tkinter import ttk
 import unittest
 from unittest.mock import MagicMock, patch
 
-from src.theme import Theme, apply_theme, detect_system_theme
+from src.theme import Theme, apply_theme, detect_system_theme, get_palette
 
 _root = None
 
@@ -69,6 +69,34 @@ class TestDetectSystemTheme(unittest.TestCase):
     @patch("src.theme.winreg", None)
     def test_falls_back_to_light_when_winreg_unavailable(self):
         self.assertEqual(detect_system_theme(), Theme.LIGHT)
+
+
+class TestGetPalette(unittest.TestCase):
+    def test_returns_dict(self):
+        palette = get_palette(Theme.LIGHT)
+        self.assertIsInstance(palette, dict)
+
+    def test_contains_expected_keys(self):
+        expected_keys = {
+            "bg", "fg", "field_bg", "field_fg", "select_bg", "select_fg",
+            "button_bg", "button_fg", "heading_bg", "heading_fg", "border",
+            "trough", "indicator",
+        }
+        for theme in Theme:
+            with self.subTest(theme=theme):
+                palette = get_palette(theme)
+                self.assertEqual(set(palette.keys()), expected_keys)
+
+    def test_light_and_dark_differ(self):
+        light = get_palette(Theme.LIGHT)
+        dark = get_palette(Theme.DARK)
+        self.assertNotEqual(light["bg"], dark["bg"])
+
+    def test_returns_copy(self):
+        palette = get_palette(Theme.LIGHT)
+        palette["bg"] = "modified"
+        fresh = get_palette(Theme.LIGHT)
+        self.assertNotEqual(fresh["bg"], "modified")
 
 
 class TestApplyTheme(unittest.TestCase):
