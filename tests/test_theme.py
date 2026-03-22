@@ -35,22 +35,22 @@ class TestDetectSystemTheme(unittest.TestCase):
     @patch("src.theme.winreg")
     def test_detects_dark_when_registry_returns_0(self, mock_winreg):
         mock_key = MagicMock()
-        mock_winreg.OpenKey.return_value = mock_key
+        mock_winreg.OpenKey.return_value.__enter__ = MagicMock(return_value=mock_key)
+        mock_winreg.OpenKey.return_value.__exit__ = MagicMock(return_value=False)
         mock_winreg.QueryValueEx.return_value = (0, 1)
         mock_winreg.HKEY_CURRENT_USER = 0x80000001
 
         self.assertEqual(detect_system_theme(), Theme.DARK)
-        mock_winreg.CloseKey.assert_called_once_with(mock_key)
 
     @patch("src.theme.winreg")
     def test_detects_light_when_registry_returns_1(self, mock_winreg):
         mock_key = MagicMock()
-        mock_winreg.OpenKey.return_value = mock_key
+        mock_winreg.OpenKey.return_value.__enter__ = MagicMock(return_value=mock_key)
+        mock_winreg.OpenKey.return_value.__exit__ = MagicMock(return_value=False)
         mock_winreg.QueryValueEx.return_value = (1, 1)
         mock_winreg.HKEY_CURRENT_USER = 0x80000001
 
         self.assertEqual(detect_system_theme(), Theme.LIGHT)
-        mock_winreg.CloseKey.assert_called_once_with(mock_key)
 
     @patch("src.theme.winreg")
     def test_falls_back_to_light_on_os_error(self, mock_winreg):
@@ -64,6 +64,10 @@ class TestDetectSystemTheme(unittest.TestCase):
         mock_winreg.OpenKey.side_effect = FileNotFoundError("Key not found")
         mock_winreg.HKEY_CURRENT_USER = 0x80000001
 
+        self.assertEqual(detect_system_theme(), Theme.LIGHT)
+
+    @patch("src.theme.winreg", None)
+    def test_falls_back_to_light_when_winreg_unavailable(self):
         self.assertEqual(detect_system_theme(), Theme.LIGHT)
 
 

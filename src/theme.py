@@ -1,5 +1,4 @@
 import enum
-import tkinter as tk
 from tkinter import ttk
 
 try:
@@ -22,10 +21,9 @@ def detect_system_theme():
         return Theme.LIGHT
 
     try:
-        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, _REGISTRY_PATH)
-        value, _ = winreg.QueryValueEx(key, _REGISTRY_KEY)
-        winreg.CloseKey(key)
-        return Theme.DARK if value == 0 else Theme.LIGHT
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, _REGISTRY_PATH) as key:
+            value, _ = winreg.QueryValueEx(key, _REGISTRY_KEY)
+            return Theme.DARK if value == 0 else Theme.LIGHT
     except (OSError, FileNotFoundError):
         return Theme.LIGHT
 
