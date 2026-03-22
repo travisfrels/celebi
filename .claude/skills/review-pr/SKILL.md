@@ -53,8 +53,44 @@ Label each finding before posting:
 - **Defect** — Must be resolved before merge. Incorrect behavior, security issue, or a clear violation of project standards.
 - **Observation** — Does not block merge. Worth noting for awareness or future improvement.
 
+## Validate Findings
+
+Apply the [`/critique`](../critique/SKILL.md) skill to each finding before posting. The critique's verdict determines the finding's fate:
+
+- **Defects**: Confirmed Defect, Downgrade to Observation, or Dismiss.
+- **Observations**: Confirmed Observation or Dismiss.
+
+Validation reasoning is internal. Only confirmed findings and their verdicts appear in the posted review.
+
 ## Post the Pull Request Review
+
+Post only confirmed findings. Include the classification label (Defect or Observation) and the validation verdict for each finding so the PR author understands the reasoning.
 
 ```bash
 gh pr review $ARGUMENTS --comment --body '{Body}'
 ```
+
+If the review contains any confirmed defects, end the body with a **Merge Blocked** notice stating that defects must be resolved before merge.
+
+## Record Findings in Project Document
+
+After posting the review, record all confirmed findings in the associated project document in `docs/projects/`.
+
+1. Identify the project doc from the PR's related issue and its milestone. If the related issue has no milestone, skip this section.
+2. Add a row to the `## Defects` table for each confirmed defect: the PR, finding description, and required resolution.
+3. Add a row to the `## Observations` table for each confirmed observation: the PR, finding description, and disposition.
+4. Commit and push the project doc update.
+
+## Create Issues for Out-of-Scope Findings
+
+For each confirmed finding that should not be addressed in this PR, create a GitHub issue using the [`/create-issue`](../create-issue/SKILL.md) skill. Assign the issue to the same milestone as the PR's related issue so the finding is associated with the project whose implementation produced it.
+
+## Defect Deferral
+
+Defects must be resolved before merge. The PR author fixes the defects and the reviewer confirms resolution in a follow-up review.
+
+If deferral is necessary, the reviewer must post a comment to the PR documenting:
+
+1. The decision to defer the defect.
+2. The justification for deferral.
+3. Confirmation that the defect is tracked (in the project Defects table and/or as a follow-up issue).

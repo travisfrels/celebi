@@ -7,19 +7,13 @@ Finish GitHub issue $ARGUMENTS
 
 1. Use the `git` CLI to add, commit, and push any remaining changes to the working branch.
 2. Use `git log -n 10 --pretty=format:"%h - %an, %ar : %s"` to sanity check repository changes.
-3. Think critically about issue implementation and use `gh issue comment $ARGUMENTS --body '{Body}'` to post an implementation summary comment to the issue with the following sections:
-    - **What was implemented.**
-    - **Design decisions**: decisions made and the rationale behind them.
-    - **Open questions**: unresolved issues that remain.
-    - **Blockers**: what slowed or stopped progress, and what systemic condition caused it. None if unobstructed.
-    - **Rework**: what had to be redone and why. None if not applicable.
-    - **Scope changes**: what was added, dropped, or deferred from the original plan. None if unchanged.
+3. Think critically about issue implementation and use `gh issue comment $ARGUMENTS --body '{Body}'` to post an implementation summary comment to the issue. Follow the structure in [`work-issue/IMPLEMENTATION-SUMMARY-TEMPLATE.md`](../work-issue/IMPLEMENTATION-SUMMARY-TEMPLATE.md).
 4. Check for stale CLAUDE.md files.
 5. Create a GitHub pull request using the GitHub (`gh`) CLI:
     1. Verify prerequisites: on a working branch, working tree is clean.
     2. Gather context: find the base branch, view the diffs (`git diff {base}...HEAD`), find the related issue.
     3. Analyze: do the changes address the issue? Do the commits follow the implementation plan? Was correctness verified?
-    4. Create the PR:
+    4. Create the PR following the structure in [`create-pr/TEMPLATE.md`](../create-pr/TEMPLATE.md):
        - Identify the issue.
        - Describe how the changes address the issue.
        - Describe how correctness was verified.

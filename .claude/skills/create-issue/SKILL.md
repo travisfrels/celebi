@@ -9,42 +9,20 @@ Create a GitHub Issue, using the GitHub (`gh`) CLI, about $ARGUMENTS
 
 1. **Determine milestone**: Determine the milestone and project from context.
    - If you were called from the `create-project` skill, then use that project.
-   - If you were called directly, then there is no milestone.
+   - If you were called from the `review-pr` skill, then use the milestone from the PR's related issue.
+   - If the issue reports a defect in an existing implementation, trace the defective code to its originating project:
+     1. Use `git blame` on the defective code to find the commit that introduced it.
+     2. Find the issue referenced in the commit message.
+     3. Use `gh issue view {issue} --json milestone` to get that issue's milestone.
+     4. If any step fails to produce a milestone, there is no milestone.
+   - Otherwise, there is no milestone.
 2. **Draft the issue** following the `## Issue Structure` and `## Style` guidelines below.
    a. **Validate acceptance criteria against ADRs**: Read the ADR index at `docs/adrs/CLAUDE.md` and identify any ADRs whose scope and topic are relevant to the issue's domain. For each relevant ADR with a status of "Accepted", read the ADR and verify that no acceptance criterion contradicts its decision or consequences. Revise any contradicting criteria to align with the ADR, noting the ADR reference in the criterion.
 3. **Create the issue**: `gh issue create --title "{title}" --body "{body}"` — include `--milestone "{title}"` if a milestone was selected in step 1.
 
-## Issue Structure:
+## Issue Structure
 
-```markdown
-## Project Reference
-
-[{project-title}]({project-file-location})
-
-## What is wrong?
-
-Clearly and concisely describe the problem including any details about how to observe the problem directly. Explain the impact the problem is having on the system and/or stakeholders. Quantifying with data where it is possible to reference this data. Describe any workarounds currently used to compensate for the issue.
-
-## Why is this a problem?
-
-Describe the root cause. Explain the technical reason the problem exists rather than simply repeating what is wrong. To make the issue actionable reference code areas and behaviors, not specific file paths or line numbers because those can change over time.
-
-## What is correct?
-
-Describe what the correct behavior of the system should be. Include design patterns, strategies, and objective best practices by name where relevant. Avoid being overly prescriptive because creating an implementation plan is the part working the issue (`work-issue`), not creating the issue (`create-issue`).
-
-## Edge cases (when applicable)
-
-Call out non-obvious or un-common scenarios to address. Explain what makes these scenarios non-obvious or un-common.
-
-## Acceptance criteria
-
-Checkboxes. Each one should be independently testable. Cover:
-
-- The happy path
-- Key edge cases
-- Things that should NOT change
-```
+See [TEMPLATE.md](TEMPLATE.md) for the issue structure template.
 
 ## Style
 
