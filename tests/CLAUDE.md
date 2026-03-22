@@ -6,6 +6,7 @@ Unit and integration tests. Run with `python -m pytest tests/ -v`.
 
 - `test_probability_engine.py` — Engine unit tests. Pure logic, no UI dependencies.
 - `test_app.py` — UI integration tests. Requires Tk; uses a withdrawn root window (`root.withdraw()`).
+- `test_theme.py` — Theme detection and application tests. Mocks `winreg` for detection; verifies `ttk.Style` configuration for all widget types.
 
 ## Conventions
 
