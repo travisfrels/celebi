@@ -51,6 +51,17 @@ Uses multiset enumeration with multinomial weighting to compute exact probabilit
 
 Enum (`TOP`, `BOTTOM`) controlling whether the highest or lowest dice from the pool are selected for the total.
 
+### theme
+
+OS-aware theming module (`src/theme.py`). Public API:
+
+| Function | Purpose |
+|----------|---------|
+| `detect_system_theme` | Read Windows `AppsUseLightTheme` registry value via `winreg`; fall back to LIGHT |
+| `apply_theme` | Configure `ttk.Style` (clam base) and root window background for a given `Theme` |
+
+Defines `Theme` enum (`LIGHT`, `DARK`) and light/dark color palettes. Called once at startup by `CelebiApp.__init__` before widget construction. Uses only stdlib (`winreg`, `tkinter.ttk`).
+
 ## Environment
 
 - **Python**: 3.10+

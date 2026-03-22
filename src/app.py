@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+from src.theme import apply_theme, detect_system_theme
 from src.probability_engine import (
     SelectionStrategy,
     calculate_probabilities,
@@ -246,6 +247,9 @@ class CelebiApp:
         self.root.title("Celebi \u2014 Trench Crusade Dice Probability Calculator")
         self.root.geometry("1200x600")
         self.root.minsize(400, 400)
+
+        theme = detect_system_theme()
+        apply_theme(self.root, theme)
 
         self.scenarios = []
         self._build_ui()
